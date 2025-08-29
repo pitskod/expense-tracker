@@ -1,0 +1,11 @@
+// Placeholder for Prisma schema
+// Define your models here
+
+model Expense {
+  id        Int      @id @default(autoincrement())
+  name      String
+  amount    Float
+  currency  String
+  category  String
+  date      DateTime
+}
