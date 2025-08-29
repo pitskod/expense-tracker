@@ -50,11 +50,24 @@ expensesRouter.post(
 );
 
 expensesRouter.get('/', async (req: Request, res: Response) => {
+  const limit = req.query.limit
+    ? parseInt(req.query.limit as string, 10)
+    : undefined;
+  const offset = req.query.offset
+    ? parseInt(req.query.offset as string, 10)
+    : undefined;
+  const fromDate = req.query.fromDate
+    ? new Date(req.query.fromDate as string)
+    : undefined;
+  const toDate = req.query.toDate
+    ? new Date(req.query.toDate as string)
+    : undefined;
+
   try {
-    const expenses = await listExpenses();
-    return res.json(expenses);
-  } catch {
-    return res.status(500).json({ error: 'Failed to fetch expenses' });
+    const expenses = await listExpenses(limit, offset, fromDate, toDate);
+    res.status(200).json(expenses);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch expenses', details: error });
   }
 });
 

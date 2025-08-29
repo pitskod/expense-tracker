@@ -19,10 +19,25 @@ export const insertExpense = async (
 };
 
 // Fetch all expenses, sorted by date in descending order
-export const getAllExpenses = async (): Promise<PrismaExpense[]> => {
-  return (await db.expense.findMany({
+export const getAllExpenses = async (
+  limit?: number,
+  offset?: number,
+  fromDate?: Date,
+  toDate?: Date,
+): Promise<PrismaExpense[]> => {
+  const where = {};
+  if (fromDate || toDate) {
+    where.date = {};
+    if (fromDate) where.date.gte = fromDate;
+    if (toDate) where.date.lte = toDate;
+  }
+
+  return await db.expense.findMany({
+    where,
     orderBy: { date: 'desc' },
-  })) as PrismaExpense[];
+    take: limit,
+    skip: offset,
+  });
 };
 
 // Fetch an expense by its ID

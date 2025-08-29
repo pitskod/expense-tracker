@@ -13,8 +13,13 @@ export const createExpense = async (expense: Expense): Promise<Expense> => {
 };
 
 // Retrieve all expenses
-export const listExpenses = async (): Promise<Expense[]> => {
-  return await getAllExpenses();
+export const listExpenses = async (
+  limit?: number,
+  offset?: number,
+  fromDate?: Date,
+  toDate?: Date,
+): Promise<Expense[]> => {
+  return await getAllExpenses(limit, offset, fromDate, toDate);
 };
 
 // Retrieve an expense by its ID
