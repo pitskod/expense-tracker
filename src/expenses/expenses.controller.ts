@@ -8,8 +8,14 @@ import {
 } from './expenses.service';
 import { Expense } from './entity/expense.entity';
 import Logger from '../helpers/Logger';
-import { validate_date, validator } from '../helpers/middlewares/validator';
+import {
+  prepare_date,
+  validate_date,
+  get_date,
+  validator,
+} from '../helpers/middlewares/validator';
 import { createExpenseSchema } from './dto/create-expense.dto';
+import { updateExpenseSchema } from './dto/update-expense.dto';
 
 export const expensesRouter: Router = Router();
 
@@ -34,7 +40,7 @@ expensesRouter.post(
           amount: Number(amount),
           currency,
           category,
-          date: validate_date(date),
+          date: get_date(date),
         };
       } catch (error) {
         return res.status(400).json({ error: error });
@@ -104,27 +110,40 @@ expensesRouter.delete('/:id', async (req: Request, res: Response) => {
   }
 });
 
-expensesRouter.patch('/:id', async (req: Request, res: Response) => {
-  try {
-    const id = parseInt(req.params.id, 10);
+expensesRouter.patch(
+  '/:id',
+  validator(updateExpenseSchema),
+  async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id, 10);
 
-    if (isNaN(id)) {
-      return res.status(400).json({ error: 'Invalid expense ID' });
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid expense ID' });
+      }
+
+      const updatedData = req.body;
+      if ('date' in updatedData) {
+        const prepared_date = prepare_date(updatedData.date);
+        if (!validate_date(prepared_date)) {
+          return res.status(400).json({ error: 'Invalid date format' });
+        }
+        updatedData.date = new Date(prepared_date);
+      }
+      if (!updatedData || Object.keys(updatedData).length === 0) {
+        return res.status(400).json({ error: 'No update data provided' });
+      }
+
+      const updatedExpense = await updateExpenseById(id, updatedData);
+
+      if (!updatedExpense) {
+        return res.status(404).json({ error: 'Expense not found' });
+      }
+
+      return res.status(200).json(updatedExpense);
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ error: 'Failed to update expense', details: error });
     }
-
-    const updatedData = req.body;
-    if (!updatedData || Object.keys(updatedData).length === 0) {
-      return res.status(400).json({ error: 'No update data provided' });
-    }
-
-    const updatedExpense = await updateExpenseById(id, updatedData);
-
-    if (!updatedExpense) {
-      return res.status(404).json({ error: 'Expense not found' });
-    }
-
-    return res.status(200).json(updatedExpense);
-  } catch {
-    return res.status(500).json({ error: 'Failed to update expense' });
-  }
-});
+  },
+);

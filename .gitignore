@@ -30,3 +30,9 @@ coverage/
 
 # OS
 .DS_Store
+
+# SQLite database
+prisma/dev.db
+
+# Prisma generated client
+node_modules/.prismaco

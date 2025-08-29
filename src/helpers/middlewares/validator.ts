@@ -32,20 +32,21 @@ export const validator = (schema: AnySchema) => {
   };
 };
 
+export const prepare_date = (date: string) => {
+  return `${date}T00:00:00Z`;
+};
+
 export const validate_date = (date: string) => {
-  let formattedDate: Date;
-  if (date) {
-    const appendTime = `${date}T00:00:00Z`;
-    // Parse the date string
-    const parsed = parseISO(appendTime);
-    if (isValid(parsed)) {
-      formattedDate = parsed;
-    } else {
-      // Fallback or throw an error if invalid
-      formattedDate = new Date();
-    }
-  } else {
-    formattedDate = new Date();
+  if (date && isValid(parseISO(date))) {
+    return true;
   }
-  return formattedDate;
+};
+
+export const get_date = (date: string) => {
+  const prepared_date = prepare_date(date);
+  if (isValid(prepared_date)) {
+    return new Date(prepared_date);
+  } else {
+    return new Date();
+  }
 };

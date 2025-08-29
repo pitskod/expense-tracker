@@ -1,6 +1,7 @@
 import db from '../db/db.service';
 import { Expense } from './entity/expense.entity';
 import { Expense as PrismaExpense } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 // Insert a new expense into the database
 export const insertExpense = async (
@@ -25,7 +26,7 @@ export const getAllExpenses = async (
   fromDate?: Date,
   toDate?: Date,
 ): Promise<PrismaExpense[]> => {
-  const where = {};
+  const where: Prisma.ExpenseWhereInput = {};
   if (fromDate || toDate) {
     where.date = {};
     if (fromDate) where.date.gte = fromDate;
