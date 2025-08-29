@@ -27,6 +27,7 @@ A RESTful API for tracking expenses built with TypeScript, Express, and Prisma.
 
 1. Clone the repository
 2. Install dependencies:
+
 ```bash
 npm install
 ```
@@ -36,6 +37,7 @@ npm install
    - Add your database connection string and other required variables
 
 4. Initialize the database:
+
 ```bash
 npx prisma generate
 npx prisma migrate dev

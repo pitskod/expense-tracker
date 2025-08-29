@@ -16,15 +16,6 @@ jest.mock('../src/helpers/Logger', () => ({
   info: jest.fn(),
 }));
 
-// jest.mock('../src/helpers/middlewares/validator', () => ({
-//   validator: () => (req, res, next) => next(),
-//   validate_date: (date: string) => {
-//     if (!date) return new Date();
-//     if (isNaN(Date.parse(date))) throw new Error('Invalid date');
-//     return new Date(date);
-//   },
-// }));
-
 import { createExpense } from '../src/expenses/expenses.service';
 
 describe('POST /expenses', () => {
