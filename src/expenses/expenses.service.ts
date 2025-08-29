@@ -5,7 +5,7 @@ import {
   updateExpense,
   deleteExpense,
 } from './expenses.repository';
-import { Expense } from './expense.entity';
+import { Expense } from './entity/expense.entity';
 
 // Create and persist a new expense
 export const createExpense = async (expense: Expense): Promise<Expense> => {
@@ -32,5 +32,5 @@ export const updateExpenseById = async (
 
 // Remove an expense by its ID
 export const deleteExpenseById = async (id: number): Promise<void> => {
-  await deleteExpense(id);
+  return await deleteExpense(id);
 };

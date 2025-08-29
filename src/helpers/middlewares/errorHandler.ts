@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Logger } from '../Logger';
+import Logger from '../Logger';
 import { Exception } from '../Exception';
 
 export const errorHandler = (
@@ -28,3 +28,5 @@ export const errorHandler = (
 
   next(error);
 };
+
+export default errorHandler;

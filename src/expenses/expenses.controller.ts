@@ -6,41 +6,48 @@ import {
   deleteExpenseById,
   updateExpenseById,
 } from './expenses.service';
-import { Expense } from './expense.entity';
-import { Logger } from '../helpers/Logger';
+import { Expense } from './entity/expense.entity';
+import Logger from '../helpers/Logger';
+import { validate_date, validator } from '../helpers/middlewares/validator';
+import { createExpenseSchema } from './dto/create-expense.dto';
 
-export const expensesRouter = Router();
+export const expensesRouter: Router = Router();
 
-expensesRouter.post('/', async (req: Request, res: Response) => {
-  Logger.info(`Create Expense`);
-
-  try {
-    const { name, amount, currency, category, date } = req.body;
-
-    if (!name || !amount || !currency || !category) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    let expense: Expense;
-    const formattedDate = new Date(`${date}T00:00:00Z`);
+expensesRouter.post(
+  '/',
+  validator(createExpenseSchema),
+  async (req: Request, res: Response) => {
+    Logger.info(`Create Expense`);
 
     try {
-      expense = {
-        name,
-        amount: Number(amount),
-        currency,
-        category,
-        date: formattedDate,
-      };
+      const { name, amount, currency, category, date } = req.body;
+
+      if (!name || !amount || !currency || !category) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      let expense: Expense;
+
+      try {
+        expense = {
+          name,
+          amount: Number(amount),
+          currency,
+          category,
+          date: validate_date(date),
+        };
+      } catch (error) {
+        return res.status(400).json({ error: error });
+      }
+      const saved = await createExpense(expense);
+      return res.status(201).json(saved);
     } catch (error) {
-      return res.status(400).json({ error: error });
+      return res
+        .status(500)
+        .json({ error: 'Failed to add expense', details: error });
     }
-    const saved = await createExpense(expense);
-    return res.status(201).json(saved);
-  } catch {
-    return res.status(500).json({ error: 'Failed to add expense' });
-  }
-});
+  },
+);
 
 expensesRouter.get('/', async (req: Request, res: Response) => {
   try {

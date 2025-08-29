@@ -1,5 +1,5 @@
 import db from '../db/db.service';
-import { Expense } from './expense.entity';
+import { Expense } from './entity/expense.entity';
 import { Expense as PrismaExpense } from '@prisma/client';
 
 // Insert a new expense into the database
